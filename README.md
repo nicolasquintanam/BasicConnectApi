@@ -9,7 +9,7 @@ Make sure you have .NET Core 8 installed on your machine. Then, follow these ste
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/nicolasquintanam/BasicConnectApi.git
+   git clone https://github.com/nicolasquintanam/basic-connect-api.git
    ```
 
 2. Navigate to the project directory:
