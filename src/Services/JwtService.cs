@@ -9,10 +9,12 @@ using System.Text;
 public class JwtService : IJwtService
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<JwtService> _logger;
 
-    public JwtService(IConfiguration configuration)
+    public JwtService(IConfiguration configuration, ILogger<JwtService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
     public string GenerateToken(string name)
@@ -39,5 +41,10 @@ public class JwtService : IJwtService
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         return tokenHandler.WriteToken(token);
+    }
+
+    public void RevokeToken(string token)
+    {
+        //TODO; Revoke token
     }
 }

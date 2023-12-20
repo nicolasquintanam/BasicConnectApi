@@ -37,7 +37,12 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        //TODO; revoke jwt
+        if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+        {
+            string token = authorizationHeader.ToString().Replace("Bearer ", string.Empty);
+            _jwtService.RevokeToken(token);
+        }
+
         return Ok(new { Message = "Session successfully closed" });
     }
 }
