@@ -15,7 +15,7 @@ Make sure you have .NET Core 8 installed on your machine. Then, follow these ste
 2. Navigate to the project directory:
 
    ```bash
-   cd BasicConnectApi/src
+   cd basic-connect-api/src
    ```
 
 3. Run the application:
