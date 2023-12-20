@@ -17,7 +17,7 @@ public class JwtService : IJwtService
         _logger = logger;
     }
 
-    public string GenerateToken(string name)
+    public string GenerateToken(string userId)
     {
         var tokenOptions = _configuration.GetSection("TokenOptions").Get<TokenOptions>();
         var key = Encoding.ASCII.GetBytes(tokenOptions.Secret);
@@ -29,7 +29,7 @@ public class JwtService : IJwtService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(JwtRegisteredClaimNames.Jti, jti),
-                new Claim(ClaimTypes.Name, name)
+                new Claim(ClaimTypes.NameIdentifier, userId)
             }),
             Expires = DateTime.UtcNow.AddDays(tokenOptions.ExpiryDays),
             Audience = tokenOptions.Audience,

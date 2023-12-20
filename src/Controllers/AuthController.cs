@@ -28,8 +28,10 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
-        //TODO; validate login
-        var token = _jwtService.GenerateToken(request.Email);
+        if (!_userService.AuthenticateUser(request.Email, request.Password, out int userId))
+            return Unauthorized();
+
+        var token = _jwtService.GenerateToken(userId.ToString());
         return Ok(new { token });
     }
 
@@ -37,12 +39,22 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
-        {
-            string token = authorizationHeader.ToString().Replace("Bearer ", string.Empty);
+        var token = GetJwtFromAuthorizationHeader();
+        if (token is not null)
             _jwtService.RevokeToken(token);
-        }
 
         return Ok(new { Message = "Session successfully closed" });
+    }
+
+    private string GetJwtFromAuthorizationHeader()
+    {
+        if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader) &&
+            !string.IsNullOrWhiteSpace(authorizationHeader) &&
+            authorizationHeader.ToString().StartsWith("Bearer "))
+        {
+            return authorizationHeader.ToString().Substring("Bearer ".Length);
+        }
+
+        return null;
     }
 }

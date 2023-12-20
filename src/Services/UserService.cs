@@ -26,4 +26,15 @@ public class UserService : IUserService
 
         return user.Id;
     }
+
+    public bool AuthenticateUser(string email, string password, out int id)
+    {
+        id = 0;
+        var user = _dbContext.User.FirstOrDefault(u => u.Email == email && string.Equals(u.Password, password));
+        if (user is null)
+            return false;
+
+        id = user.Id;
+        return true;
+    }
 }

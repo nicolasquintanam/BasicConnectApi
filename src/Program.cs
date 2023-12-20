@@ -46,19 +46,17 @@ builder.Services.AddScoped<BasicConnectApi.Services.IJwtService, BasicConnectApi
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-// Register your validation filter in the DI
-
-
-
-builder.Services.AddControllers();
+builder.Services.AddControllers(
+    options =>
+    {
+        options.Filters.Add<ValidationFilter>();
+    }
+);
+builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddScoped<ValidationFilter>();
-builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
-
 
 var app = builder.Build();
 
