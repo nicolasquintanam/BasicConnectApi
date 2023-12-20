@@ -1,6 +1,0 @@
-@BasicConnectApi_HostAddress = http://localhost:5273
-
-GET {{BasicConnectApi_HostAddress}}/auth/
-Accept: application/json
-
-###
