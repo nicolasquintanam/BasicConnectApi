@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/BasicConnectApi/bin/Debug/net8.0/BasicConnectApi.dll",
+            "program": "${workspaceFolder}/src/bin/Debug/net8.0/BasicConnectApi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/BasicConnectApi",
+            "cwd": "${workspaceFolder}/src",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
