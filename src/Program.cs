@@ -41,6 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddScoped<BasicConnectApi.Services.IUserService, BasicConnectApi.Services.UserService>();
+builder.Services.AddScoped<BasicConnectApi.Services.IJwtService, BasicConnectApi.Services.JwtService>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
