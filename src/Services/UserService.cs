@@ -12,11 +12,12 @@ public class UserService : IUserService
         _dbContext = dbContext;
     }
 
-    public int RegisterUser(string name, string email, string password)
+    public int RegisterUser(string firstName, string lastName, string email, string password)
     {
         var user = new User()
         {
-            Name = name,
+            FirstName = firstName,
+            LastName = lastName,
             Email = email,
             Password = password
         };

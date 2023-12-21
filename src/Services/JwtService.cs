@@ -5,16 +5,19 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BasicConnectApi.Data;
 
 public class JwtService : IJwtService
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<JwtService> _logger;
+    private ApplicationDbContext _dbContext;
 
-    public JwtService(IConfiguration configuration, ILogger<JwtService> logger)
+    public JwtService(IConfiguration configuration, ILogger<JwtService> logger, ApplicationDbContext dbContext)
     {
         _configuration = configuration;
         _logger = logger;
+        _dbContext = dbContext;
     }
 
     public string GenerateToken(string userId)
@@ -45,6 +48,33 @@ public class JwtService : IJwtService
 
     public void RevokeToken(string token)
     {
-        //TODO; Revoke token
+        int? userId = GetUserId(token);
+        if (userId is null)
+            return;
+        var revokedToken = new RevokedToken
+        {
+            Token = token,
+            UserId = userId.Value
+        };
+
+        _dbContext.RevokedToken.Add(revokedToken);
+        _dbContext.SaveChanges();
+    }
+
+    private int? GetUserId(string token)
+    {
+        // Decodifica el token JWT
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+        var userIdClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "nameid");
+
+        // Intenta convertir el valor del claim a int
+        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return userId;
+        }
+
+        return null;
     }
 }

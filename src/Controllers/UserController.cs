@@ -20,7 +20,7 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register([FromBody] RegisterRequest request)
     {
-        var userId = _userService.RegisterUser(request.FirstName, request.Email, request.Password);
+        var userId = _userService.RegisterUser(request.FirstName, request.LastName, request.Email, request.Password);
         return Ok(new { UserId = userId, Message = "User registered successfully." });
     }
 }
