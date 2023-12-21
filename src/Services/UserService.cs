@@ -12,6 +12,12 @@ public class UserService : IUserService
         _dbContext = dbContext;
     }
 
+    public bool ExistsUser(string email)
+    {
+        var user = _dbContext.User.FirstOrDefault(u => u.Email == email);
+        return user is not null;
+    }
+
     public int RegisterUser(string firstName, string lastName, string email, string password)
     {
         var user = new User()

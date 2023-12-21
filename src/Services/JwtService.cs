@@ -53,12 +53,28 @@ public class JwtService : IJwtService
             return;
         var revokedToken = new RevokedToken
         {
-            Token = token,
+            TokenId = GetJti(token),
             UserId = userId.Value
         };
 
         _dbContext.RevokedToken.Add(revokedToken);
         _dbContext.SaveChanges();
+    }
+
+    public bool TokenIsRevoked(string tokenId)
+    {
+        var revoked = _dbContext.RevokedToken.FirstOrDefault(u => u.TokenId == tokenId);
+        return revoked is not null;
+    }
+
+    private string GetJti(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+        var jti = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "jti").ToString().Substring("jti: ".Length);
+
+        return jti;
     }
 
     private int? GetUserId(string token)

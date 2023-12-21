@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +22,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         .EnableDetailedErrors()
 );
 
+
+
 // Configure JWT authentication
 var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 var key = Encoding.ASCII.GetBytes(tokenOptions.Secret);
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -38,13 +44,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = tokenOptions.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = context =>
+            {
+                var jwtService = context.HttpContext.RequestServices.GetRequiredService<BasicConnectApi.Services.IJwtService>();
+                var tokenId = context.SecurityToken.Id;
+                var revokedTokens = jwtService.TokenIsRevoked(tokenId);
+                if (revokedTokens)
+                {
+                    context.Fail("Revoked Token");
+                    context.Response.OnStarting(state =>
+                    {
+                        var httpContext = (HttpContext)state;
+                        var jsonResponse = JsonSerializer.Serialize(new BaseResponse(false, "Invalid token. Please log in again."));
+                        httpContext.Response.ContentType = "application/json";
+                        httpContext.Response.ContentLength = Encoding.UTF8.GetBytes(jsonResponse).Length;
+                        return httpContext.Response.WriteAsync(jsonResponse);
+                    }, context.HttpContext);
+                }
+                return Task.CompletedTask;
+
+            }
+        };
     });
 
 builder.Services.AddScoped<BasicConnectApi.Services.IUserService, BasicConnectApi.Services.UserService>();
 builder.Services.AddScoped<BasicConnectApi.Services.IJwtService, BasicConnectApi.Services.JwtService>();
 
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
+
 
 builder.Services.AddControllers(
     options =>

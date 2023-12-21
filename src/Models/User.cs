@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
-
 namespace BasicConnectApi.Models;
 
 public class User

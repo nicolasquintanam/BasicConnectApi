@@ -12,27 +12,23 @@ using Microsoft.AspNetCore.Authorization;
 [ServiceFilter(typeof(ValidationFilter))]
 public class AuthController : ControllerBase
 {
-    private readonly ILogger<AuthController> _logger;
     private readonly IUserService _userService;
     private readonly IJwtService _jwtService;
-    private readonly IConfiguration _configuration;
 
-    public AuthController(ILogger<AuthController> logger, IUserService userService, IConfiguration configuration, IJwtService jwtService)
+    public AuthController(IUserService userService, IJwtService jwtService)
     {
-        _logger = logger;
         _userService = userService;
         _jwtService = jwtService;
-        _configuration = configuration;
     }
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
     {
         if (!_userService.AuthenticateUser(request.Email, request.Password, out int userId))
-            return Unauthorized();
+            return Unauthorized(new BaseResponse(false, "Invalid username or password"));
 
         var token = _jwtService.GenerateToken(userId.ToString());
-        return Ok(new { token });
+        return Ok(new BaseResponse(true) { Data = new { token } });
     }
 
     [Authorize]
@@ -43,7 +39,7 @@ public class AuthController : ControllerBase
         if (token is not null)
             _jwtService.RevokeToken(token);
 
-        return Ok(new { Message = "Session successfully closed" });
+        return Ok(new BaseResponse(true));
     }
 
     private string GetJwtFromAuthorizationHeader()

@@ -63,9 +63,9 @@ public class ApplicationDbContext : DbContext
             .HasColumnName("id");
 
         modelBuilder.Entity<RevokedToken>()
-            .Property(t => t.Token)
+            .Property(t => t.TokenId)
             .IsRequired()
-            .HasColumnName("token");
+            .HasColumnName("token_id");
 
         modelBuilder.Entity<User>()
             .HasMany(u => u.RevokedTokens)
