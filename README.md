@@ -18,10 +18,45 @@ Make sure you have .NET Core 8 installed on your machine. Then, follow these ste
    cd basic-connect-api/src
    ```
 
-3. Run the application:
+3. Modify the appsettings.json file:
+
+   Open the appsettings.json file and provide the necessary database connection string under the ConnectionStrings section.
+
+4. Run Entity Framework Core Migrations:
+
+   Execute the following command to create the initial database schema:
 
    ```bash
-   dotnet run --launch-profile https
+   dotnet ef migrations add InitialCreate --context ApplicationDbContext
+   ```
+
+5. Apply Database Migrations:
+
+   Execute the following command to apply the database migrations and create the database:
+
+   ```bash
+   dotnet ef database update
+   ```
+
+6. Run the application:
+
+   ```bash
+   dotnet run --launch-profile https-dev
+   ```
+
+## Testing
+
+To run the unit tests for Basic Connect API, follow these steps:
+
+1. Navigate to the project's test directory:
+
+   ```bash
+   cd basic-connect-api/test
+   ```
+
+2. Run the tests:
+   ```bash
+   dotnet test
    ```
 
 ## Contributing
@@ -37,3 +72,7 @@ Contributions are welcome! If you want to contribute to BasicConnectApi, follow 
 ## Issues
 
 If you encounter any issues or have questions, please create an issue.
+
+```
+
+```
