@@ -7,13 +7,13 @@ using Moq;
 using Microsoft.AspNetCore.Mvc;
 
 
-public class AuthControllerTest
+public class AuthControllerTests
 {
     private readonly AuthController _controller;
     private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<IJwtService> _jwtServiceMock;
 
-    public AuthControllerTest()
+    public AuthControllerTests()
     {
         _userServiceMock = new Mock<IUserService>();
         _jwtServiceMock = new Mock<IJwtService>();
