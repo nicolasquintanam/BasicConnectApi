@@ -2,7 +2,7 @@ namespace BasicConnectApi.Services;
 
 public class EmailConfirmationService : IEmailConfirmationService
 {
-    public void SendConfirmationEmail(string userEmail)
+    public async Task SendConfirmationEmailAsync(string userEmail)
     {
         //TODO: implement email confirmation sending
     }
