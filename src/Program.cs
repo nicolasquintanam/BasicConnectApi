@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Middleware;
 using BasicConnectApi.Filters;
 using BasicConnectApi.Models;
+using BasicConnectApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -49,7 +50,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             OnTokenValidated = context =>
             {
-                var jwtService = context.HttpContext.RequestServices.GetRequiredService<BasicConnectApi.Services.IJwtService>();
+                var jwtService = context.HttpContext.RequestServices.GetRequiredService<IJwtService>();
                 var tokenId = context.SecurityToken.Id;
                 var revokedTokens = jwtService.TokenIsRevoked(tokenId);
                 if (revokedTokens)
@@ -70,10 +71,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddScoped<BasicConnectApi.Services.IUserService, BasicConnectApi.Services.UserService>();
-builder.Services.AddScoped<BasicConnectApi.Services.IJwtService, BasicConnectApi.Services.JwtService>();
-
-
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
+builder.Services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
 
 builder.Services.AddControllers(
     options =>

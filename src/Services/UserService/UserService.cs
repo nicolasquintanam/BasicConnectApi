@@ -6,10 +6,12 @@ using BasicConnectApi.Models;
 public class UserService : IUserService
 {
     private ApplicationDbContext _dbContext;
+    private ITokenService _tokenService;
 
-    public UserService(ApplicationDbContext dbContext)
+    public UserService(ApplicationDbContext dbContext, ITokenService tokenService)
     {
         _dbContext = dbContext;
+        _tokenService = tokenService;
     }
 
     public bool ExistsUser(string email)
@@ -18,15 +20,19 @@ public class UserService : IUserService
         return user is not null;
     }
 
-    public int RegisterUser(string firstName, string lastName, string email, string password)
+    public int RegisterUser(string firstName, string lastName, string email, string password, bool isEmailConfirmed)
     {
         var user = new User()
         {
             FirstName = firstName,
             LastName = lastName,
             Email = email,
-            Password = password
+            Password = password,
+            IsEmailConfirmed = isEmailConfirmed
         };
+
+        if (!isEmailConfirmed)
+            user.EmailConfirmationToken = _tokenService.GenerateToken(50);
 
         _dbContext.User.Add(user);
         _dbContext.SaveChanges();
