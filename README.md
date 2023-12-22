@@ -72,7 +72,3 @@ Contributions are welcome! If you want to contribute to BasicConnectApi, follow 
 ## Issues
 
 If you encounter any issues or have questions, please create an issue.
-
-```
-
-```
