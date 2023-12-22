@@ -19,6 +19,12 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        ConfigureUser(modelBuilder);
+        ConfigureRevokedToken(modelBuilder);
+    }
+
+    private void ConfigureUser(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<User>()
             .HasKey(e => e.Id);
 
@@ -46,15 +52,33 @@ public class ApplicationDbContext : DbContext
             .IsUnique();
 
         modelBuilder.Entity<User>()
+            .Property(e => e.IsEmailConfirmed)
+            .HasDefaultValue(false)
+            .HasColumnName("is_email_confirmed");
+
+        modelBuilder.Entity<User>()
+            .Property(e => e.EmailConfirmationToken)
+            .HasMaxLength(50)
+            .IsRequired(false)
+            .HasColumnName("email_confirmation_token");
+
+        modelBuilder.Entity<User>()
             .Property(e => e.Password)
             .HasMaxLength(64)
             .HasColumnName("password");
 
         modelBuilder.Entity<User>()
+            .HasMany(u => u.RevokedTokens)
+            .WithOne(t => t.User)
+            .HasForeignKey(t => t.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<User>()
             .ToTable("user");
+    }
 
-
-
+    private void ConfigureRevokedToken(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<RevokedToken>()
             .HasKey(e => e.Id);
 
@@ -66,12 +90,6 @@ public class ApplicationDbContext : DbContext
             .Property(t => t.TokenId)
             .IsRequired()
             .HasColumnName("token_id");
-
-        modelBuilder.Entity<User>()
-            .HasMany(u => u.RevokedTokens)
-            .WithOne(t => t.User)
-            .HasForeignKey(t => t.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<RevokedToken>()
             .Property(t => t.UserId)
