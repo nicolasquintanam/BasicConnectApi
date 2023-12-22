@@ -9,10 +9,12 @@ using BasicConnectApi.Services;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IEmailConfirmationService _emailConfirmationService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IEmailConfirmationService emailConfirmationService)
     {
         _userService = userService;
+        _emailConfirmationService = emailConfirmationService;
     }
 
     [HttpPost("register")]
@@ -24,4 +26,11 @@ public class UserController : ControllerBase
         var userId = _userService.RegisterUser(request.FirstName, request.LastName, request.Email, request.Password);
         return Ok(new BaseResponse(true) { Data = new { user_id = userId } });
     }
+
+    [HttpPost("send-confirmation-email")]
+    public IActionResult SendConfirmationEmail([FromBody] SendConfirmationEmailRequest request)
+    {
+        return Ok();
+    }
+
 }
