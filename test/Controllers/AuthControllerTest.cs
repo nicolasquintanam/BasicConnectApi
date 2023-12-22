@@ -44,4 +44,21 @@ public class AuthControllerTest
         Assert.Equal(tokenValue, tokenGenerated);
     }
 
+    [Fact]
+    public void Login_With_Invalid_Credentials_Should_Return_UnauthorizedResult_With_Error_Message()
+    {
+        // Arrange
+        var invalidLoginRequest = new LoginRequest { Email = "invalid@example.com", Password = "InvalidPassword" };
+        var userId = It.IsAny<int>();
+        _userServiceMock.Setup(x => x.AuthenticateUser(invalidLoginRequest.Email, invalidLoginRequest.Password, out userId)).Returns(false);
+
+        // Act
+        var result = _controller.Login(invalidLoginRequest);
+
+        // Assert
+        var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+        var baseResponse = Assert.IsType<BaseResponse>(unauthorizedResult.Value);
+        Assert.False(baseResponse.IsSuccess);
+        Assert.Equal("Invalid username or password", baseResponse.Message);
+    }
 }
