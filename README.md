@@ -30,17 +30,23 @@ Ensure you have Docker and Docker Compose installed on your system.
 3. Run the following command to build and start the containers:
 
    ```bash
-   docker-compose up --build -d
+   docker build -t basic-connect-api-image
    ```
 
-4. Wait for a few seconds to ensure the MySQL setup is complete.
-5. Execute the following command to run the migrations:
+4. Run the following command to build and start the containers:
+
+   ```bash
+   docker-compose up -d
+   ```
+
+5. Wait for a few seconds to ensure the MySQL setup is complete.
+6. Execute the following command to run the migrations:
 
    ```bash
    curl -X GET http://localhost:5001/migration/run-migrations
    ```
 
-6. Access the application in your browser:
+7. Access the application in your browser:
 
 http://localhost:5001/swagger/index.html
 
