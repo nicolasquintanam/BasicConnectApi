@@ -52,7 +52,7 @@ If you want to stop and remove the containers, run:
 docker-compose down
 ```
 
-## Installation
+## Installation without Docker
 
 Make sure you have .NET Core 8 installed on your machine. Then, follow these steps:
 
