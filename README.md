@@ -2,6 +2,56 @@
 
 BasicConnectApi is a simple API developed with .NET Core 8 that provides basic connection functionalities.
 
+## Configuration and Execution with Docker
+
+This project uses Docker to facilitate configuration and execution. Follow these steps to get started:
+
+### Prerequisites
+
+Ensure you have Docker and Docker Compose installed on your system.
+
+- [Docker Installation Guide](https://docs.docker.com/get-docker/)
+- [Docker Compose Installation Guide](https://docs.docker.com/compose/install/)
+
+### Execution
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/nicolasquintanam/basic-connect-api.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd basic-connect-api
+   ```
+
+3. Run the following command to build and start the containers:
+
+   ```bash
+   docker-compose up --build -d
+   ```
+
+4. Wait for a few seconds to ensure the MySQL setup is complete.
+5. Execute the following command to run the migrations:
+
+   ```bash
+   curl -X GET http://localhost:5001/migration/run-migrations
+   ```
+
+6. Access the application in your browser:
+
+http://localhost:5001/swagger/index.html
+
+### Stop and Clean
+
+If you want to stop and remove the containers, run:
+
+```bash
+docker-compose down
+```
+
 ## Installation
 
 Make sure you have .NET Core 8 installed on your machine. Then, follow these steps:
