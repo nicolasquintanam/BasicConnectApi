@@ -1,8 +1,8 @@
+namespace BasicConnectApi.Controllers;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Data;
-
-namespace BasicConnectApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
