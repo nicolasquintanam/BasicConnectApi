@@ -80,6 +80,9 @@ Below are details for the available endpoints in the API.
 - **Description:** Allows a previously registered user to log out and revoke their token.
 - **HTTP Method:** POST
 - **Path:** `/v1/auth/logout`
+- **Request Headers:**
+
+  - `Authorization: Bearer [JWT_TOKEN]`
 
 - **Possible Responses:**
 
