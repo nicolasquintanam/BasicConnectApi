@@ -2,15 +2,11 @@
 
 The Basic Connect API is a backend service designed to facilitate user authentication and basic account management for mobile applications. It provides simple and secure endpoints to enable user registration, login, logout, and related functionalities.
 
-## Purpose
-
-The primary purpose of the Basic Connect API is to empower mobile applications with essential user authentication features. Developers can seamlessly integrate this API into their apps, allowing users to create accounts, log in securely, and manage their basic account settings.
-
-## Endpoints
+# Endpoints
 
 Below are details for the available endpoints in the API.
 
-### Login
+## Login
 
 - **Description:** Allows a previously registered user to log in and obtain an access token.
 - **HTTP Method:** POST
@@ -79,7 +75,39 @@ Below are details for the available endpoints in the API.
       }
       ```
 
-### Register
+## Logout
+
+- **Description:** Allows a previously registered user to log out and revoke their token.
+- **HTTP Method:** POST
+- **Path:** `/v1/auth/logout`
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** Successful logout.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 401 Unauthorized
+
+    - **Description:** Token is not valid.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "Invalid token. Please log in again.",
+        "data": {}
+      }
+      ```
+
+## Register
 
 - **Description:** Register a new user.
 - **HTTP Method:** POST
@@ -141,6 +169,147 @@ Below are details for the available endpoints in the API.
       {
         "success": false,
         "message": "The 'password' field must be a SHA-256 hash.",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 500 Internal Server Error
+    - **Description:** An unexpected server error occurred.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "An error has occurred",
+        "data": {}
+      }
+      ```
+
+## Send email to confirm
+
+- **Description:** Send a email to a registered user to confirm their e-mail address.
+- **HTTP Method:** POST
+- **Path:** `/v1/emailconfirmation/send`
+- **Request Body Parameters:**
+  - `email`: Email address of the user to confirm.
+- **Request Body Parameters Constraints:**
+
+  - `email`:
+    - Required: Yes.
+    - Format: Valid email format.
+    - Length: Maximum 255 characters.
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** The email was sent successfully.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 422 Unprocessable Entity
+
+    - **Description:** The request couldn't be processed due to validation errors.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The 'email' field is not a valid e-mail address.",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 500 Internal Server Error
+    - **Description:** An unexpected server error occurred.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "An error has occurred",
+        "data": {}
+      }
+      ```
+
+## Confirm email
+
+- **Description:** Allows a registered user to confirm their e-mail address.
+- **HTTP Method:** GET
+- **Path:** `/v1/emailconfirmation/confirm`
+- **Request URL Parameters:**
+
+  - `email`: Email address of the user to confirm.
+  - `token`: Confirmation token the user received to confirm the e-mail address.
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** The e-mail address was confirmed successfully.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 422 Unprocessable Entity
+
+    - **Description:** The request couldn't be processed due to validation errors.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The 'email' field is not a valid e-mail address.",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 400 Bad Request
+
+    - **Description:** Incorrect token or e-mail address.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "An error has occurred",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 500 Internal Server Error
+    - **Description:** An unexpected server error occurred.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "An error has occurred",
+        "data": {}
+      }
+      ```
+
+## Run Database Migrations
+
+- **Description:** Run database migrations.
+- **HTTP Method:** GET
+- **Path:** `/v1/migration/run-migrations`
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** The migrations was completed.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
         "data": {}
       }
       ```
