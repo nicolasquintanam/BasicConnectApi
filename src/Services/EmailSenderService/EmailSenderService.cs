@@ -8,10 +8,12 @@ namespace BasicConnectApi.Services;
 public class EmailSenderService : IEmailSenderService
 {
     private readonly EmailConfiguration _emailConfiguration;
+    private readonly ILogger<EmailSenderService> _logger;
 
-    public EmailSenderService(EmailConfiguration emailConfiguration)
+    public EmailSenderService(EmailConfiguration emailConfiguration, ILogger<EmailSenderService> logger)
     {
         _emailConfiguration = emailConfiguration;
+        _logger = logger;
     }
 
     public async Task SendEmail(string email, string subject, string body)
@@ -29,9 +31,9 @@ public class EmailSenderService : IEmailSenderService
             await mailClient.AuthenticateAsync(_emailConfiguration.From, _emailConfiguration.Password);
             await mailClient.SendAsync(emailMessage);
         }
-        catch
+        catch (Exception ex)
         {
-
+            _logger.LogError(ex, "Error sending email.");
             throw;
         }
         finally

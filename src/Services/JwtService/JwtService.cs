@@ -6,7 +6,6 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BasicConnectApi.Data;
-using BasicConnectApi.Helpers;
 
 public class JwtService : IJwtService
 {
@@ -49,12 +48,12 @@ public class JwtService : IJwtService
 
     public void RevokeToken(string token)
     {
-        int? userId = JwtHelper.GetUserId(token);
+        int? userId = GetUserIdFromToken(token);
         if (userId is null)
             return;
         var revokedToken = new RevokedToken
         {
-            TokenId = JwtHelper.GetJti(token),
+            TokenId = GetJtiFromToken(token),
             UserId = userId.Value
         };
 
@@ -66,5 +65,42 @@ public class JwtService : IJwtService
     {
         var revoked = _dbContext.RevokedToken.FirstOrDefault(u => u.TokenId == tokenId);
         return revoked is not null;
+    }
+
+    public string? GetTokenFromAuthorizationHeader(IHeaderDictionary headers)
+    {
+        if (headers.TryGetValue("Authorization", out var authorizationHeader) &&
+            !string.IsNullOrWhiteSpace(authorizationHeader) &&
+            authorizationHeader.ToString().StartsWith("Bearer "))
+        {
+            return authorizationHeader.ToString().Substring("Bearer ".Length);
+        }
+
+        return null;
+    }
+
+    public string? GetJtiFromToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+        var jti = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "jti").ToString().Substring("jti: ".Length);
+
+        return jti;
+    }
+
+    public int? GetUserIdFromToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+        var userIdClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "nameid");
+
+        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return userId;
+        }
+
+        return null;
     }
 }

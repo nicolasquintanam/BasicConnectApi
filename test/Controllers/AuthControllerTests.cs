@@ -5,7 +5,9 @@ using BasicConnectApi.Services;
 using BasicConnectApi.Models;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Http;
+using System.Runtime.InteropServices.Marshalling;
+using Microsoft.AspNetCore.Authorization;
 
 public class AuthControllerTests
 {
@@ -60,5 +62,13 @@ public class AuthControllerTests
         var baseResponse = Assert.IsType<BaseResponse>(unauthorizedResult.Value);
         Assert.False(baseResponse.IsSuccess);
         Assert.Equal("Invalid username or password", baseResponse.Message);
+    }
+
+    [Fact]
+    public void Verify_Logout_Method_Is_Decorated_With_Authorize_Attribute()
+    {
+        var methodInfo = _controller.GetType().GetMethod("Logout");
+        var attributes = methodInfo.GetCustomAttributes(typeof(AuthorizeAttribute), true);
+        Assert.True(attributes.Any(), "No AuthorizeAttribute found on Logout method");
     }
 }
