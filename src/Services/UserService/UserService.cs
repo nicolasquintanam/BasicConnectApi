@@ -5,10 +5,10 @@ using BasicConnectApi.Models;
 
 public class UserService : IUserService
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
     private readonly ITokenService _tokenService;
 
-    public UserService(ApplicationDbContext dbContext, ITokenService tokenService)
+    public UserService(IApplicationDbContext dbContext, ITokenService tokenService)
     {
         _dbContext = dbContext;
         _tokenService = tokenService;

@@ -3,7 +3,7 @@ namespace BasicConnectApi.Data;
 using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Models;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -12,6 +12,9 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> User { get; set; }
     public DbSet<RevokedToken> RevokedToken { get; set; }
+
+    public int SaveChanges() => base.SaveChanges();
+    public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

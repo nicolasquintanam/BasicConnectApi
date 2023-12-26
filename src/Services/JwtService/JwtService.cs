@@ -11,9 +11,9 @@ public class JwtService : IJwtService
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<JwtService> _logger;
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
 
-    public JwtService(IConfiguration configuration, ILogger<JwtService> logger, ApplicationDbContext dbContext)
+    public JwtService(IConfiguration configuration, ILogger<JwtService> logger, IApplicationDbContext dbContext)
     {
         _configuration = configuration;
         _logger = logger;

@@ -9,11 +9,11 @@ public class EmailConfirmationService : IEmailConfirmationService
     const string ENDPOINT_CONFIRM = "/api/v1/emailconfirmation/confirm";
 
 
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
     private readonly IEmailSenderService _emailSenderService;
     private readonly ITokenService _tokenService;
 
-    public EmailConfirmationService(ApplicationDbContext dbContext, IEmailSenderService emailSenderService, ITokenService tokenService)
+    public EmailConfirmationService(IApplicationDbContext dbContext, IEmailSenderService emailSenderService, ITokenService tokenService)
     {
         _dbContext = dbContext;
         _emailSenderService = emailSenderService;
