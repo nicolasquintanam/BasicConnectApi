@@ -114,7 +114,7 @@ Below are details for the available endpoints in the API.
       ```json
       {
         "success": true,
-        "message": "User registration completed successfully",
+        "message": "Operation completed successfully",
         "data": {
           "user_id": 1
         }
