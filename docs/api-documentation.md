@@ -21,9 +21,11 @@ Below are details for the available endpoints in the API.
 - **Request Body Parameters Constraints:**
 
   - `email`:
+    - Required: Yes.
     - Format: Valid email format.
     - Length: Maximum 255 characters.
   - `password`:
+    - Required: Yes.
     - Password should be provided as a SHA-256 hash.
 
 - **Possible Responses:**
@@ -62,6 +64,83 @@ Below are details for the available endpoints in the API.
       {
         "success": false,
         "message": "Invalid username or password",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 500 Internal Server Error
+    - **Description:** An unexpected server error occurred.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "An error has occurred",
+        "data": {}
+      }
+      ```
+
+### Register
+
+- **Description:** Register a new user.
+- **HTTP Method:** POST
+- **Path:** `/v1/user/register`
+- **Request Body Parameters:**
+  - `first_name`: First name of the user.
+  - `last_name`: Last name of the user.
+  - `email`: Email address of the user.
+  - `password`: SHA-256 hash of the user's password.
+- **Request Body Parameters Constraints:**
+
+  - `first_name`:
+    - Required: Yes.
+    - Length: Maximum 100 characters.
+  - `last_name`:
+    - Required: Yes.
+    - Length: Maximum 100 characters.
+  - `email`:
+    - Required: Yes.
+    - Format: Valid email format.
+    - Length: Maximum 255 characters.
+  - `password`:
+    - Required: Yes.
+    - Password should be provided as a SHA-256 hash.
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** The user registration was successful.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "User registration completed successfully",
+        "data": {
+          "user_id": 1
+        }
+      }
+      ```
+
+  - **Code:** 409 Conflict
+
+    - **Description:** The provided email is already registered for another user.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The email is already registered",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 422 Unprocessable Entity
+
+    - **Description:** The request couldn't be processed due to validation errors.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The 'password' field must be a SHA-256 hash.",
         "data": {}
       }
       ```
