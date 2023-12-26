@@ -2,5 +2,5 @@ namespace BasicConnectApi.Services;
 
 public interface IEmailSenderService
 {
-    void SendConfirmationEmail(string email, string confirmationToken);
+    Task SendEmail(string email, string subject, string body);
 }
