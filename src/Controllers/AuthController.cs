@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 [ServiceFilter(typeof(ValidationFilter))]
 public class AuthController : ControllerBase
 {

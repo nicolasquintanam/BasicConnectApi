@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Data;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/v1/[controller]")]
 public class MigrationController : ControllerBase
 {
     private readonly IServiceProvider _serviceProvider;
