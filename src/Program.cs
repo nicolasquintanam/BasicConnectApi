@@ -1,4 +1,3 @@
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using BasicConnectApi.Data;
 using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Middleware;
@@ -26,8 +25,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 
 // Configure JWT authentication
-var tokenOptions = builder.Configuration.GetSection("TokenOptions").Get<TokenOptions>();
-var key = Encoding.ASCII.GetBytes(tokenOptions.Secret);
+var jwtConfiguration = builder.Configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
+var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -41,8 +40,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = tokenOptions.Issuer,
-            ValidAudience = tokenOptions.Audience,
+            ValidIssuer = jwtConfiguration.Issuer,
+            ValidAudience = jwtConfiguration.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
 

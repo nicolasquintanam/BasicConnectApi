@@ -22,8 +22,8 @@ public class JwtService : IJwtService
 
     public string GenerateToken(string userId)
     {
-        var tokenOptions = _configuration.GetSection("TokenOptions").Get<TokenOptions>();
-        var key = Encoding.ASCII.GetBytes(tokenOptions.Secret);
+        var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
+        var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
         var jti = Guid.NewGuid().ToString();
 
 
@@ -34,9 +34,9 @@ public class JwtService : IJwtService
                 new Claim(JwtRegisteredClaimNames.Jti, jti),
                 new Claim(ClaimTypes.NameIdentifier, userId)
             }),
-            Expires = DateTime.UtcNow.AddDays(tokenOptions.ExpiryDays),
-            Audience = tokenOptions.Audience,
-            Issuer = tokenOptions.Issuer,
+            Expires = DateTime.UtcNow.AddDays(jwtConfiguration.ExpiryDays),
+            Audience = jwtConfiguration.Audience,
+            Issuer = jwtConfiguration.Issuer,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
@@ -79,13 +79,11 @@ public class JwtService : IJwtService
 
     private int? GetUserId(string token)
     {
-        // Decodifica el token JWT
         var tokenHandler = new JwtSecurityTokenHandler();
         var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
 
         var userIdClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "nameid");
 
-        // Intenta convertir el valor del claim a int
         if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var userId))
         {
             return userId;

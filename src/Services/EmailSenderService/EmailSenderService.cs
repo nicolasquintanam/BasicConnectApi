@@ -17,7 +17,7 @@ public class EmailSenderService : IEmailSenderService
     public async Task SendEmail(string email, string subject, string body)
     {
         using MimeMessage emailMessage = new MimeMessage();
-        emailMessage.From.Add(new MailboxAddress(_emailConfiguration.Name, _emailConfiguration.From));
+        emailMessage.From.Add(new MailboxAddress(_emailConfiguration.From, _emailConfiguration.From));
         emailMessage.To.Add(new MailboxAddress(email, email));
         emailMessage.Subject = subject;
         BodyBuilder emailBodyBuilder = new() { TextBody = body };
@@ -26,7 +26,7 @@ public class EmailSenderService : IEmailSenderService
         try
         {
             await mailClient.ConnectAsync(_emailConfiguration.SmtpServer, _emailConfiguration.Port, true);
-            await mailClient.AuthenticateAsync(_emailConfiguration.Name, _emailConfiguration.Password);
+            await mailClient.AuthenticateAsync(_emailConfiguration.From, _emailConfiguration.Password);
             await mailClient.SendAsync(emailMessage);
         }
         catch
