@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using BasicConnectApi.Models;
 using BasicConnectApi.Services;
 using BasicConnectApi.Filters;
+using BasicConnectApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 
 
@@ -35,22 +36,10 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public IActionResult Logout()
     {
-        var token = GetJwtFromAuthorizationHeader();
+        var token = JwtHelper.GetTokenFromAuthorizationHeader(HttpContext.Request.Headers);
         if (token is not null)
             _jwtService.RevokeToken(token);
 
         return Ok(new BaseResponse(true));
-    }
-
-    private string GetJwtFromAuthorizationHeader()
-    {
-        if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader) &&
-            !string.IsNullOrWhiteSpace(authorizationHeader) &&
-            authorizationHeader.ToString().StartsWith("Bearer "))
-        {
-            return authorizationHeader.ToString().Substring("Bearer ".Length);
-        }
-
-        return null;
     }
 }

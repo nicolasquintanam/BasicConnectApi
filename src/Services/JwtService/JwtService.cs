@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BasicConnectApi.Data;
+using BasicConnectApi.Helpers;
 
 public class JwtService : IJwtService
 {
@@ -48,12 +49,12 @@ public class JwtService : IJwtService
 
     public void RevokeToken(string token)
     {
-        int? userId = GetUserId(token);
+        int? userId = JwtHelper.GetUserId(token);
         if (userId is null)
             return;
         var revokedToken = new RevokedToken
         {
-            TokenId = GetJti(token),
+            TokenId = JwtHelper.GetJti(token),
             UserId = userId.Value
         };
 
@@ -65,30 +66,5 @@ public class JwtService : IJwtService
     {
         var revoked = _dbContext.RevokedToken.FirstOrDefault(u => u.TokenId == tokenId);
         return revoked is not null;
-    }
-
-    private string GetJti(string token)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-
-        var jti = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "jti").ToString().Substring("jti: ".Length);
-
-        return jti;
-    }
-
-    private int? GetUserId(string token)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
-
-        var userIdClaim = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "nameid");
-
-        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var userId))
-        {
-            return userId;
-        }
-
-        return null;
     }
 }
