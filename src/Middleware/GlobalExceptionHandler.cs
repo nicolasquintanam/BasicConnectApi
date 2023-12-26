@@ -1,5 +1,6 @@
 namespace BasicConnectApi.Middleware;
 
+using BasicConnectApi.Models;
 using Microsoft.AspNetCore.Diagnostics;
 
 internal sealed class GlobalExceptionHandler : IExceptionHandler
@@ -15,13 +16,9 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
     {
         _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
-        var problemDetails = new
-        {
-            Status = (int?)StatusCodes.Status500InternalServerError,
-            Title = "Server error"
-        };
+        var problemDetails = new BaseResponse(false);
 
-        httpContext.Response.StatusCode = problemDetails.Status.Value;
+        httpContext.Response.StatusCode = 500;
 
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
