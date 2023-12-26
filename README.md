@@ -78,15 +78,7 @@ Make sure you have .NET Core 8 installed on your machine. Then, follow these ste
 
    Open the appsettings.json file and provide the necessary database connection string under the ConnectionStrings section.
 
-4. Run Entity Framework Core Migrations:
-
-   Execute the following command to create the initial database schema:
-
-   ```bash
-   dotnet ef migrations add InitialCreate --context ApplicationDbContext
-   ```
-
-5. Apply Database Migrations:
+4. Apply Database Migrations:
 
    Execute the following command to apply the database migrations and create the database:
 
@@ -94,7 +86,7 @@ Make sure you have .NET Core 8 installed on your machine. Then, follow these ste
    dotnet ef database update
    ```
 
-6. Run the application:
+5. Run the application:
 
    ```bash
    dotnet run --launch-profile https-dev
