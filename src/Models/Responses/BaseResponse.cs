@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 public class BaseResponse
 {
-    public BaseResponse(bool isSuccess, string message = "")
+    public BaseResponse(bool isSuccess, string? message = "")
     {
         IsSuccess = isSuccess;
         if (string.IsNullOrEmpty(message))

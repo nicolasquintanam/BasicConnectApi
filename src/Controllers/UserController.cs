@@ -9,12 +9,10 @@ using BasicConnectApi.Services;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly IEmailConfirmationService _emailConfirmationService;
 
-    public UserController(IUserService userService, IEmailConfirmationService emailConfirmationService)
+    public UserController(IUserService userService)
     {
         _userService = userService;
-        _emailConfirmationService = emailConfirmationService;
     }
 
     [HttpPost("register")]

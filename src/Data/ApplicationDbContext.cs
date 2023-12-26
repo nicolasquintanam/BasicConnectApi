@@ -2,10 +2,6 @@ namespace BasicConnectApi.Data;
 
 using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 public class ApplicationDbContext : DbContext
 {
@@ -23,7 +19,7 @@ public class ApplicationDbContext : DbContext
         ConfigureRevokedToken(modelBuilder);
     }
 
-    private void ConfigureUser(ModelBuilder modelBuilder)
+    private static void ConfigureUser(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()
             .HasKey(e => e.Id);
@@ -77,7 +73,7 @@ public class ApplicationDbContext : DbContext
             .ToTable("user");
     }
 
-    private void ConfigureRevokedToken(ModelBuilder modelBuilder)
+    private static void ConfigureRevokedToken(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<RevokedToken>()
             .HasKey(e => e.Id);

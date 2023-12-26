@@ -3,16 +3,19 @@ namespace BasicConnectApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Data;
+using BasicConnectApi.Models;
 
 [ApiController]
 [Route("api/v1/[controller]")]
 public class MigrationController : ControllerBase
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<MigrationController> _logger;
 
-    public MigrationController(IServiceProvider serviceProvider)
+    public MigrationController(IServiceProvider serviceProvider, ILogger<MigrationController> logger)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     [HttpGet("run-migrations")]
@@ -26,11 +29,13 @@ public class MigrationController : ControllerBase
                 dbContext.Database.Migrate();
             }
 
-            return Ok("Migrations executed successfully.");
+            return Ok(new BaseResponse(true));
         }
         catch (Exception ex)
         {
-            return StatusCode(500, $"Error executing migrations: {ex.Message}");
+            _logger.LogError(ex, "Run migrations exception");
+            return StatusCode(500, new BaseResponse(false));
+
         }
     }
 }

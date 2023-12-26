@@ -8,12 +8,10 @@ using BasicConnectApi.Services;
 [Route("api/v1/[controller]")]
 public class EmailConfirmationController : ControllerBase
 {
-    private readonly IUserService _userService;
     private readonly IEmailConfirmationService _emailConfirmationService;
 
-    public EmailConfirmationController(IUserService userService, IEmailConfirmationService emailConfirmationService)
+    public EmailConfirmationController(IEmailConfirmationService emailConfirmationService)
     {
-        _userService = userService;
         _emailConfirmationService = emailConfirmationService;
     }
 
@@ -21,7 +19,6 @@ public class EmailConfirmationController : ControllerBase
     public IActionResult ConfirmEmail([FromQuery] ConfirmEmailRequest request)
     {
         var isEmailConfirmed = _emailConfirmationService.ConfirmEmail(request.Email, request.Token);
-
         if (!isEmailConfirmed)
             return BadRequest(new BaseResponse(false));
 
