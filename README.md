@@ -30,7 +30,7 @@ Ensure you have Docker and Docker Compose installed on your system.
 3. Run the following command to build and start the containers:
 
    ```bash
-   docker build -t basic-connect-api-image 
+   docker build -t basic-connect-api-image .
    ```
 
 4. Run the following command to build and start the containers:
