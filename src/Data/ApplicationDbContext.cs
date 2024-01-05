@@ -3,15 +3,11 @@ namespace BasicConnectApi.Data;
 using Microsoft.EntityFrameworkCore;
 using BasicConnectApi.Models;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-
-    }
-
     public DbSet<User> User { get; set; }
     public DbSet<RevokedToken> RevokedToken { get; set; }
+    public DbSet<OneTimePassword> OneTimePassword { get; set; }
 
     public int SaveChanges() => base.SaveChanges();
     public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
@@ -19,6 +15,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ConfigureUser(modelBuilder);
+        ConfigureOneTimePassword(modelBuilder);
         ConfigureRevokedToken(modelBuilder);
     }
 
@@ -56,12 +53,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .HasColumnName("is_email_confirmed");
 
         modelBuilder.Entity<User>()
-            .Property(e => e.EmailConfirmationToken)
-            .HasMaxLength(50)
-            .IsRequired(false)
-            .HasColumnName("email_confirmation_token");
-
-        modelBuilder.Entity<User>()
             .Property(e => e.Password)
             .HasMaxLength(64)
             .HasColumnName("password");
@@ -73,7 +64,49 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<User>()
+           .HasMany(u => u.OneTimePasswords)
+           .WithOne(t => t.User)
+           .HasForeignKey(t => t.UserId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<User>()
             .ToTable("user");
+    }
+
+    private static void ConfigureOneTimePassword(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<OneTimePassword>()
+                   .HasKey(e => e.Id);
+
+        modelBuilder.Entity<OneTimePassword>()
+            .Property(e => e.Id)
+            .HasColumnName("id");
+
+        modelBuilder.Entity<OneTimePassword>()
+            .Property(t => t.UserId)
+            .HasColumnName("user_id");
+
+        modelBuilder.Entity<OneTimePassword>()
+            .Property(e => e.OtpValue)
+            .HasMaxLength(64)
+            .HasColumnName("otp_value");
+
+        modelBuilder.Entity<OneTimePassword>()
+            .Property(e => e.Context)
+            .HasMaxLength(50)
+            .HasColumnName("context");
+
+        modelBuilder.Entity<OneTimePassword>()
+            .Property(e => e.ExpiryTime)
+            .HasColumnName("expiry_time");
+
+        modelBuilder.Entity<OneTimePassword>()
+            .Property(e => e.IsUsed)
+            .HasDefaultValue(false)
+            .HasColumnName("is_used");
+
+        modelBuilder.Entity<OneTimePassword>()
+            .ToTable("one_time_password");
     }
 
     private static void ConfigureRevokedToken(ModelBuilder modelBuilder)

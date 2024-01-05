@@ -2,22 +2,25 @@ namespace BasicConnectApi.Services;
 
 using BasicConnectApi.Data;
 using BasicConnectApi.Models;
+using Microsoft.EntityFrameworkCore;
 
-public class UserService : IUserService
+public class UserService(IApplicationDbContext dbContext, ITokenService tokenService, ILogger<UserService> logger) : IUserService
 {
-    private readonly IApplicationDbContext _dbContext;
-    private readonly ITokenService _tokenService;
+    private readonly IApplicationDbContext _dbContext = dbContext;
+    private readonly ITokenService _tokenService = tokenService;
+    private readonly ILogger<UserService> _logger = logger;
 
-    public UserService(IApplicationDbContext dbContext, ITokenService tokenService)
+    public async Task<bool> ExistsUser(string email)
     {
-        _dbContext = dbContext;
-        _tokenService = tokenService;
+        var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Email == email);
+        _logger.LogInformation("User exists? {0}", user is not null);
+        return user is not null;
     }
 
-    public bool ExistsUser(string email)
+    public async Task<int?> GetUserId(string email)
     {
-        var user = _dbContext.User.FirstOrDefault(u => u.Email == email);
-        return user is not null;
+        var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Email == email);
+        return user?.Id;
     }
 
     public int RegisterUser(string firstName, string lastName, string email, string password, bool isEmailConfirmed)
@@ -30,9 +33,6 @@ public class UserService : IUserService
             Password = password,
             IsEmailConfirmed = isEmailConfirmed
         };
-
-        if (!isEmailConfirmed)
-            user.EmailConfirmationToken = _tokenService.GenerateToken(50);
 
         _dbContext.User.Add(user);
         _dbContext.SaveChanges();
