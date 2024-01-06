@@ -30,7 +30,7 @@ public class AuthControllerTests
         var userId = It.IsAny<int>();
         var tokenGenerated = "dummyToken";
         _userServiceMock.Setup(x => x.AuthenticateUser(validLoginRequest.Email, validLoginRequest.Password, out userId)).Returns(true);
-        _jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<string>())).Returns(tokenGenerated);
+        _jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<string>(), null)).Returns(tokenGenerated);
 
         // Act
         var result = _controller.Login(validLoginRequest);
