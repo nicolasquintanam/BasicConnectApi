@@ -6,4 +6,5 @@ public interface IUserService
     bool AuthenticateUser(string email, string password, out int id);
     Task<bool> ExistsUser(string email);
     Task<int?> GetUserId(string email);
+    Task<bool> ResetPassword(int userId, string password);
 }

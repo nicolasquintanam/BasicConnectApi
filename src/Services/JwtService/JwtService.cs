@@ -20,7 +20,7 @@ public class JwtService : IJwtService
         _dbContext = dbContext;
     }
 
-    public string GenerateToken(string userId)
+    public string GenerateToken(string userId, TimeSpan? customDuration = null)
     {
         var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
         var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
@@ -34,7 +34,7 @@ public class JwtService : IJwtService
                 new Claim(JwtRegisteredClaimNames.Jti, jti),
                 new Claim(ClaimTypes.NameIdentifier, userId)
             }),
-            Expires = DateTime.UtcNow.AddDays(jwtConfiguration.ExpiryDays),
+            Expires = customDuration is null ? DateTime.UtcNow.AddDays(jwtConfiguration.ExpiryDays) : DateTime.UtcNow.Add(customDuration.Value),
             Audience = jwtConfiguration.Audience,
             Issuer = jwtConfiguration.Issuer,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -43,7 +43,9 @@ public class JwtService : IJwtService
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return tokenHandler.WriteToken(token);
+        var result = tokenHandler.WriteToken(token);
+        _logger.LogInformation("token generated: {0}", result);
+        return result;
     }
 
     public void RevokeToken(string token)

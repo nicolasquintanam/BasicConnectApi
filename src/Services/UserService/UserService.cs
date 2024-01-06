@@ -50,4 +50,14 @@ public class UserService(IApplicationDbContext dbContext, ITokenService tokenSer
         id = user.Id;
         return true;
     }
+
+    public async Task<bool> ResetPassword(int userId, string password)
+    {
+        var user = await _dbContext.User.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user is null)
+            return false;
+        user.Password = password;
+        await _dbContext.SaveChangesAsync();
+        return true;
+    }
 }
