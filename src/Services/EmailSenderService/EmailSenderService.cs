@@ -18,8 +18,10 @@ public class EmailSenderService : IEmailSenderService
         _logger = logger;
     }
 
-    public async Task SendToConfirmEmail(string email, string otp)
+    public async Task SendToConfirmEmail(string? email, string? otp)
     {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(otp))
+            return;
         string name = "Nicolas";
         string subject = $"Confirm Your Email Address for {APP_NAME}";
         string body = $"Hello {name},\n\n" +
@@ -30,8 +32,10 @@ public class EmailSenderService : IEmailSenderService
         await SendEmail(email, subject, body);
     }
 
-    public async Task SendToRecoverPassword(string email, string otp)
+    public async Task SendToRecoverPassword(string? email, string? otp)
     {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(otp))
+            return;
         string name = "Nicolas";
         string subject = $"Password Reset Request for {APP_NAME}";
         string body = $"Hello {name},\n\n" +

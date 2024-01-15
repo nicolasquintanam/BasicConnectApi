@@ -45,7 +45,7 @@ public class AuthControllerTests
         Assert.True(baseResponse.IsSuccess);
         Assert.NotNull(baseResponse.Data);
         var tokenProperty = baseResponse.Data.GetType().GetProperty("token");
-        var tokenValue = tokenProperty.GetValue(baseResponse.Data);
+        var tokenValue = tokenProperty?.GetValue(baseResponse.Data);
         Assert.NotNull(tokenValue);
         Assert.Equal(tokenValue, tokenGenerated);
     }
@@ -72,7 +72,7 @@ public class AuthControllerTests
     public void Verify_Logout_Method_Is_Decorated_With_Authorize_Attribute()
     {
         var methodInfo = _controller.GetType().GetMethod("Logout");
-        var attributes = methodInfo.GetCustomAttributes(typeof(AccessTokenAuthorizeAttribute), true);
-        Assert.True(attributes.Any(), "No AuthorizeAttribute found on Logout method");
+        var attributes = methodInfo?.GetCustomAttributes(typeof(AccessTokenAuthorizeAttribute), true);
+        Assert.True(attributes?.Any(), "No AuthorizeAttribute found on Logout method");
     }
 }

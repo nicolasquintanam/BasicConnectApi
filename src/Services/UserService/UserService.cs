@@ -10,21 +10,26 @@ public class UserService(IApplicationDbContext dbContext, ITokenService tokenSer
     private readonly ITokenService _tokenService = tokenService;
     private readonly ILogger<UserService> _logger = logger;
 
-    public async Task<bool> ExistsUser(string email)
+    public async Task<bool> ExistsUser(string? email)
     {
+        if (string.IsNullOrEmpty(email))
+            return false;
         var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Email == email);
         _logger.LogInformation("User exists? {0}", user is not null);
         return user is not null;
     }
 
-    public async Task<int?> GetUserId(string email)
+    public async Task<int?> GetUserId(string? email)
     {
         var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Email == email);
         return user?.Id;
     }
 
-    public int RegisterUser(string firstName, string lastName, string email, string password, bool isEmailConfirmed)
+    public int? RegisterUser(string? firstName, string? lastName, string? email, string? password, bool isEmailConfirmed = false)
     {
+        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) ||
+            string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            return null;
         var user = new User()
         {
             FirstName = firstName,
@@ -40,9 +45,11 @@ public class UserService(IApplicationDbContext dbContext, ITokenService tokenSer
         return user.Id;
     }
 
-    public bool AuthenticateUser(string email, string password, out int id)
+    public bool AuthenticateUser(string? email, string? password, out int id)
     {
         id = 0;
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            return false;
         var user = _dbContext.User.FirstOrDefault(u => u.Email == email && string.Equals(u.Password, password));
         if (user is null)
             return false;
@@ -51,8 +58,10 @@ public class UserService(IApplicationDbContext dbContext, ITokenService tokenSer
         return true;
     }
 
-    public async Task<bool> ResetPassword(int userId, string password)
+    public async Task<bool> ResetPassword(int userId, string? password)
     {
+        if (string.IsNullOrEmpty(password))
+            return false;
         var user = await _dbContext.User.FirstOrDefaultAsync(x => x.Id == userId);
         if (user is null)
             return false;

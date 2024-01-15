@@ -5,11 +5,11 @@ using BasicConnectApi.Models;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
 {
-    public DbSet<User> User { get; set; }
-    public DbSet<RevokedToken> RevokedToken { get; set; }
-    public DbSet<OneTimePassword> OneTimePassword { get; set; }
+    public DbSet<User> User { get; set; } = null!;
+    public DbSet<RevokedToken> RevokedToken { get; set; } = null!;
+    public DbSet<OneTimePassword> OneTimePassword { get; set; } = null!;
 
-    public int SaveChanges() => base.SaveChanges();
+    public override int SaveChanges() => base.SaveChanges();
     public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

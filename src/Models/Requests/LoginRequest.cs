@@ -9,10 +9,10 @@ public class LoginRequest
     [EmailAddress(ErrorMessage = "The 'email' field is not a valid e-mail address.")]
     [StringLength(255)]
     [JsonPropertyName("email")]
-    public string Email { get; set; }
+    public string? Email { get; set; }
 
     [JsonPropertyName("password")]
     [Required(ErrorMessage = "The 'password' field is required.")]
     [RegularExpression(@"^[0-9a-fA-F]{64}$", ErrorMessage = "The 'password' field must be a SHA-256.")]
-    public string Password { get; set; }
+    public string? Password { get; set; }
 }

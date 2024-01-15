@@ -24,7 +24,7 @@ public class JwtService : IJwtService
     public string GenerateToken(string userId, TokenTypeEnum tokenType = TokenTypeEnum.AccessToken)
     {
         var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
-        if (jwtConfiguration is null)
+        if (jwtConfiguration is null || jwtConfiguration.Secret is null)
             return string.Empty;
         var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
         var jti = Guid.NewGuid().ToString();
@@ -94,7 +94,7 @@ public class JwtService : IJwtService
         var tokenHandler = new JwtSecurityTokenHandler();
         var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
 
-        var jti = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "jti").ToString().Substring("jti: ".Length);
+        var jti = jsonToken?.Claims.FirstOrDefault(claim => claim.Type == "jti")?.ToString()["jti: ".Length..];
 
         return jti;
     }
@@ -117,7 +117,7 @@ public class JwtService : IJwtService
     public bool ValidateTemporaryToken(string token)
     {
         var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
-        if (jwtConfiguration is null)
+        if (jwtConfiguration is null || jwtConfiguration.Secret is null)
             return false;
         var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -158,7 +158,7 @@ public class JwtService : IJwtService
     public bool ValidateAccessToken(string token)
     {
         var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
-        if (jwtConfiguration is null)
+        if (jwtConfiguration is null || jwtConfiguration.Secret is null)
             return false;
         var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
         var tokenHandler = new JwtSecurityTokenHandler();

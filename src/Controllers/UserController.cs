@@ -16,7 +16,9 @@ public class UserController(IUserService userService) : ControllerBase
         var existsUser = await _userService.ExistsUser(request.Email);
         if (existsUser)
             return Conflict(new BaseResponse(false, "The email is already registered"));
-        var userId = _userService.RegisterUser(request.FirstName, request.LastName, request.Email, request.Password);
+        int? userId = _userService.RegisterUser(request.FirstName, request.LastName, request.Email, request.Password);
+        if (userId == null)
+            return BadRequest(new BaseResponse(false));
         return Ok(new BaseResponse(true) { Data = new { user_id = userId } });
     }
 }

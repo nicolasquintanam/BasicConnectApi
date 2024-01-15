@@ -18,8 +18,10 @@ public class OtpService(IApplicationDbContext dbContext, IUserService userServic
     private readonly IJwtService _jwtService = jwtService;
     private readonly ILogger<OtpService> _logger = logger;
 
-    public async Task<string> GenerateOtp(string email, string context)
+    public async Task<string> GenerateOtp(string? email, string? context)
     {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(context))
+            return string.Empty;
         if (!await _userService.ExistsUser(email))
             return string.Empty;
         if (!ExistsContext(context))
@@ -40,8 +42,10 @@ public class OtpService(IApplicationDbContext dbContext, IUserService userServic
     private static bool ExistsContext(string context) =>
         Enum.TryParse<ContextEnum>(context, true, out _);
 
-    public async Task<bool> ValidateOtp(string email, string otp, string context)
+    public async Task<bool> ValidateOtp(string? email, string? otp, string? context)
     {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(otp) || string.IsNullOrEmpty(context))
+            return false;
         if (!await _userService.ExistsUser(email))
             return false;
         var userId = await _userService.GetUserId(email);
@@ -64,8 +68,10 @@ public class OtpService(IApplicationDbContext dbContext, IUserService userServic
         return true;
     }
 
-    public async Task<string> GenerateTemporaryAccessToken(string email, string context)
+    public async Task<string> GenerateTemporaryAccessToken(string? email, string? context)
     {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(context))
+            return string.Empty;
         if (!IsContextEqual(context, ContextEnum.password_recovery))
             return string.Empty;
         _logger.LogInformation("Context is password recovery");

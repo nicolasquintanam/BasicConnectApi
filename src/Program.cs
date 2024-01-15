@@ -19,14 +19,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         .EnableDetailedErrors()
 );
 
-// Configure JWT authentication
-var jwtConfiguration = builder.Configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
-var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
-
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// Configure JWT authentication
+var jwtConfiguration = builder.Configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
+
+
+if (jwtConfiguration is not null && jwtConfiguration.Secret is not null)
+{
+    var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -40,6 +43,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(key),
         };
     });
+}
+
+
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
 if (emailConfig is not null)
