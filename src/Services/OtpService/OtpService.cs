@@ -74,7 +74,7 @@ public class OtpService(IApplicationDbContext dbContext, IUserService userServic
         if (userId is null)
             return string.Empty;
         _logger.LogInformation("User id {0}", userId.Value);
-        return _jwtService.GenerateToken(userId.Value.ToString(), new TimeSpan(0, 15, 0));
+        return _jwtService.GenerateToken(userId.Value.ToString(), Enums.TokenTypeEnum.TemporaryToken);
     }
 
     public bool IsContextEqual(string contextAsString, ContextEnum expectedContext)

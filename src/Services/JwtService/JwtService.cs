@@ -2,6 +2,7 @@ namespace BasicConnectApi.Services;
 
 using BasicConnectApi.Models;
 using System.IdentityModel.Tokens.Jwt;
+using BasicConnectApi.Enums;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -20,9 +21,11 @@ public class JwtService : IJwtService
         _dbContext = dbContext;
     }
 
-    public string GenerateToken(string userId, TimeSpan? customDuration = null)
+    public string GenerateToken(string userId, TokenTypeEnum tokenType = TokenTypeEnum.AccessToken)
     {
         var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
+        if (jwtConfiguration is null)
+            return string.Empty;
         var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
         var jti = Guid.NewGuid().ToString();
 
@@ -32,9 +35,10 @@ public class JwtService : IJwtService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(JwtRegisteredClaimNames.Jti, jti),
-                new Claim(ClaimTypes.NameIdentifier, userId)
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim("scope", tokenType == TokenTypeEnum.TemporaryToken ? "temporary-token" : "access-token")
             }),
-            Expires = customDuration is null ? DateTime.UtcNow.AddDays(jwtConfiguration.ExpiryDays) : DateTime.UtcNow.Add(customDuration.Value),
+            Expires = tokenType == TokenTypeEnum.TemporaryToken ? DateTime.UtcNow.AddMinutes(15) : DateTime.UtcNow.AddDays(jwtConfiguration.ExpiryDays),
             Audience = jwtConfiguration.Audience,
             Issuer = jwtConfiguration.Issuer,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -44,7 +48,7 @@ public class JwtService : IJwtService
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
         var result = tokenHandler.WriteToken(token);
-        _logger.LogInformation("token generated: {0}", result);
+
         return result;
     }
 
@@ -53,9 +57,12 @@ public class JwtService : IJwtService
         int? userId = GetUserIdFromToken(token);
         if (userId is null)
             return;
+        var tokenId = GetJtiFromToken(token);
+        if (tokenId is null)
+            return;
         var revokedToken = new RevokedToken
         {
-            TokenId = GetJtiFromToken(token),
+            TokenId = tokenId,
             UserId = userId.Value
         };
 
@@ -66,6 +73,7 @@ public class JwtService : IJwtService
     public bool TokenIsRevoked(string tokenId)
     {
         var revoked = _dbContext.RevokedToken.FirstOrDefault(u => u.TokenId == tokenId);
+
         return revoked is not null;
     }
 
@@ -104,5 +112,87 @@ public class JwtService : IJwtService
         }
 
         return null;
+    }
+
+    public bool ValidateTemporaryToken(string token)
+    {
+        var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
+        if (jwtConfiguration is null)
+            return false;
+        var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration.Secret)),
+            ValidIssuer = jwtConfiguration.Issuer,
+            ValidAudience = jwtConfiguration.Audience
+        };
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+            if (!principal.HasClaim(claim => claim.Type == "scope" && claim.Value == "temporary-token"))
+                return false;
+
+            string? tokenId = GetJtiFromToken(token);
+            if (tokenId is null)
+                return false;
+            if (TokenIsRevoked(tokenId))
+                return false;
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Reset Password Token isn't valid");
+            return false;
+        }
+    }
+
+    public bool ValidateAccessToken(string token)
+    {
+        var jwtConfiguration = _configuration.GetSection("JwtConfiguration").Get<JwtConfiguration>();
+        if (jwtConfiguration is null)
+            return false;
+        var key = Encoding.ASCII.GetBytes(jwtConfiguration.Secret);
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var validationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtConfiguration.Secret)),
+            ValidIssuer = jwtConfiguration.Issuer,
+            ValidAudience = jwtConfiguration.Audience
+        };
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+            if (!principal.HasClaim(claim => claim.Type == "scope" && claim.Value == "access-token"))
+                return false;
+
+            string? tokenId = GetJtiFromToken(token);
+            if (tokenId is null)
+                return false;
+            if (TokenIsRevoked(tokenId))
+                return false;
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Access Token isn't valid");
+            return false;
+        }
     }
 }

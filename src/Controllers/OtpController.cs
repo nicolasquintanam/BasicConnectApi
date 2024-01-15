@@ -6,9 +6,10 @@ using BasicConnectApi.Services;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class OtpController(IOtpService otpService, IEmailSenderService emailSenderService) : ControllerBase
+public class OtpController(IOtpService otpService, IEmailSenderService emailSenderService, ILogger<OtpController> logger) : ControllerBase
 {
     private readonly IOtpService _otpService = otpService;
+    private readonly ILogger<OtpController> _logger = logger;
     private readonly IEmailSenderService _emailSenderService = emailSenderService;
 
     [HttpPost("generate")]
@@ -21,6 +22,7 @@ public class OtpController(IOtpService otpService, IEmailSenderService emailSend
             await _emailSenderService.SendToConfirmEmail(request.Email, otp);
         if (request.Context == "password_recovery")
             await _emailSenderService.SendToRecoverPassword(request.Email, otp);
+
         return Ok(new BaseResponse(true));
     }
 

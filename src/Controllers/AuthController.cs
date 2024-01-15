@@ -9,10 +9,11 @@ using BasicConnectApi.Custom;
 [ApiController]
 [Route("api/v1")]
 [ServiceFilter(typeof(ValidationFilter))]
-public class AuthController(IUserService userService, IJwtService jwtService) : ControllerBase
+public class AuthController(IUserService userService, IJwtService jwtService, ILogger<AuthController> logger) : ControllerBase
 {
     private readonly IUserService _userService = userService;
     private readonly IJwtService _jwtService = jwtService;
+    private readonly ILogger<AuthController> _logger = logger;
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
@@ -24,7 +25,7 @@ public class AuthController(IUserService userService, IJwtService jwtService) : 
         return Ok(new BaseResponse(true) { Data = new { token } });
     }
 
-    [CustomAuthorize]
+    [AccessTokenAuthorize]
     [HttpPost("logout")]
     public IActionResult Logout()
     {

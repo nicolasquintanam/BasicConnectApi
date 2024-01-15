@@ -8,18 +8,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Runtime.InteropServices.Marshalling;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
+using BasicConnectApi.Custom;
 
 public class AuthControllerTests
 {
     private readonly AuthController _controller;
     private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<IJwtService> _jwtServiceMock;
+    private readonly Mock<ILogger<AuthController>> _loggerServiceMock;
 
     public AuthControllerTests()
     {
         _userServiceMock = new Mock<IUserService>();
         _jwtServiceMock = new Mock<IJwtService>();
-        _controller = new AuthController(_userServiceMock.Object, _jwtServiceMock.Object);
+        _loggerServiceMock = new Mock<ILogger<AuthController>>();
+        _controller = new AuthController(_userServiceMock.Object, _jwtServiceMock.Object, _loggerServiceMock.Object);
     }
 
     [Fact]
@@ -30,7 +34,7 @@ public class AuthControllerTests
         var userId = It.IsAny<int>();
         var tokenGenerated = "dummyToken";
         _userServiceMock.Setup(x => x.AuthenticateUser(validLoginRequest.Email, validLoginRequest.Password, out userId)).Returns(true);
-        _jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<string>(), null)).Returns(tokenGenerated);
+        _jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<string>(), Enums.TokenTypeEnum.AccessToken)).Returns(tokenGenerated);
 
         // Act
         var result = _controller.Login(validLoginRequest);
@@ -68,7 +72,7 @@ public class AuthControllerTests
     public void Verify_Logout_Method_Is_Decorated_With_Authorize_Attribute()
     {
         var methodInfo = _controller.GetType().GetMethod("Logout");
-        var attributes = methodInfo.GetCustomAttributes(typeof(AuthorizeAttribute), true);
+        var attributes = methodInfo.GetCustomAttributes(typeof(AccessTokenAuthorizeAttribute), true);
         Assert.True(attributes.Any(), "No AuthorizeAttribute found on Logout method");
     }
 }
