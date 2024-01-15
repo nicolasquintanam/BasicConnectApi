@@ -7,16 +7,10 @@ using BasicConnectApi.Models;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class MigrationController : ControllerBase
+public class MigrationController(IServiceProvider serviceProvider, ILogger<MigrationController> logger) : ControllerBase
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<MigrationController> _logger;
-
-    public MigrationController(IServiceProvider serviceProvider, ILogger<MigrationController> logger)
-    {
-        _serviceProvider = serviceProvider;
-        _logger = logger;
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly ILogger<MigrationController> _logger = logger;
 
     [HttpGet("run-migrations")]
     public IActionResult RunMigrations()
