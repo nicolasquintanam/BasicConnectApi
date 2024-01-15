@@ -4,22 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 using BasicConnectApi.Models;
 using BasicConnectApi.Services;
 using BasicConnectApi.Filters;
-using Microsoft.AspNetCore.Authorization;
-
+using BasicConnectApi.Custom;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1")]
 [ServiceFilter(typeof(ValidationFilter))]
-public class AuthController : ControllerBase
+public class AuthController(IUserService userService, IJwtService jwtService) : ControllerBase
 {
-    private readonly IUserService _userService;
-    private readonly IJwtService _jwtService;
-
-    public AuthController(IUserService userService, IJwtService jwtService)
-    {
-        _userService = userService;
-        _jwtService = jwtService;
-    }
+    private readonly IUserService _userService = userService;
+    private readonly IJwtService _jwtService = jwtService;
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginRequest request)
@@ -31,7 +24,7 @@ public class AuthController : ControllerBase
         return Ok(new BaseResponse(true) { Data = new { token } });
     }
 
-    [Authorize]
+    [CustomAuthorize]
     [HttpPost("logout")]
     public IActionResult Logout()
     {

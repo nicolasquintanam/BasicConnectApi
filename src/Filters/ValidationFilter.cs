@@ -13,7 +13,8 @@ public class ValidationFilter : IActionFilter
             var errors = context.ModelState.Values.SelectMany(v => v.Errors)
                                                   .Select(e => e.ErrorMessage)
                                                   .ToList();
-            context.Result = new UnprocessableEntityObjectResult(new BaseResponse(false, errors.FirstOrDefault()));
+
+            context.Result = new BadRequestObjectResult(new BaseResponse(false, errors.FirstOrDefault()));
         }
 
     }

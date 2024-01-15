@@ -1,3 +1,4 @@
+using BasicConnectApi.Custom;
 using BasicConnectApi.Models;
 using BasicConnectApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,7 @@ public class PasswordController(ILogger<PasswordController> logger, IUserService
     private readonly ILogger<PasswordController> _logger = logger;
     private readonly IUserService _userService = userService;
     private readonly IJwtService _jwtService = jwtService;
-    [Authorize]
+    [CustomAuthorize]
     [HttpPut("reset")]
     public async Task<ActionResult> ResetPassword([FromBody] PasswordResetRequest request)
     {

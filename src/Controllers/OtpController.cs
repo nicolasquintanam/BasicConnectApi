@@ -29,7 +29,7 @@ public class OtpController(IOtpService otpService, IEmailSenderService emailSend
     {
         var result = await _otpService.ValidateOtp(request.Email, request.OtpValue, request.Context);
         if (!result)
-            return BadRequest(new BaseResponse(false));
+            return Unauthorized(new BaseResponse(false, "Invalid OTP value."));
 
         var temporaryToken = await _otpService.GenerateTemporaryAccessToken(request.Email, request.Context);
         if (!string.IsNullOrEmpty(temporaryToken))

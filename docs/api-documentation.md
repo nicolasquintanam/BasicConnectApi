@@ -10,7 +10,7 @@ Below are details for the available endpoints in the API.
 
 - **Description:** Allows a previously registered user to log in and obtain an access token.
 - **HTTP Method:** POST
-- **Path:** `/v1/auth/login`
+- **Path:** `/v1/login`
 - **Request Body Parameters:**
   - `email`: The email address of the registered user.
   - `password`: The password associated with the email.
@@ -18,7 +18,7 @@ Below are details for the available endpoints in the API.
 
   - `email`:
     - Required: Yes.
-    - Format: Valid email format.
+    - Format: Should be a valid email address.
     - Length: Maximum 255 characters.
   - `password`:
     - Required: Yes.
@@ -40,7 +40,7 @@ Below are details for the available endpoints in the API.
       }
       ```
 
-  - **Code:** 422 Unprocessable Entity
+  - **Code:** 400 Bad Request
 
     - **Description:** The request was well-formed but was unable to be followed due to semantic errors.
     - **Example response body:**
@@ -79,7 +79,7 @@ Below are details for the available endpoints in the API.
 
 - **Description:** Allows a previously registered user to log out and revoke their token.
 - **HTTP Method:** POST
-- **Path:** `/v1/auth/logout`
+- **Path:** `/v1/logout`
 - **Request Headers:**
 
   - `Authorization: Bearer [JWT_TOKEN]`
@@ -130,7 +130,7 @@ Below are details for the available endpoints in the API.
     - Length: Maximum 100 characters.
   - `email`:
     - Required: Yes.
-    - Format: Valid email format.
+    - Format: Should be a valid email address.
     - Length: Maximum 255 characters.
   - `password`:
     - Required: Yes.
@@ -164,7 +164,7 @@ Below are details for the available endpoints in the API.
       }
       ```
 
-  - **Code:** 422 Unprocessable Entity
+  - **Code:** 400 Bad Request
 
     - **Description:** The request couldn't be processed due to validation errors.
     - **Example response body:**
@@ -187,25 +187,34 @@ Below are details for the available endpoints in the API.
       }
       ```
 
-## Send email to confirm
+## OTP Generation
 
-- **Description:** Send a email to a registered user to confirm their e-mail address.
-- **HTTP Method:** POST
-- **Path:** `/v1/emailconfirmation/send`
+### Endpoint: `/v1/otp/generate`
+
+- **Description:** Generates a One-Time Password (OTP) and sends it to the user via the provided email address. The context indicates the reason for OTP generation, either to confirm the email or for password recovery.
+
+- **HTTP Method:** `POST`
+
+- **Path:** `/v1/otp/generate`
+
 - **Request Body Parameters:**
-  - `email`: Email address of the user to confirm.
+
+  - `email`: The user's email address.
+  - `context`: The context of OTP generation, which can be 'confirm_email' or 'password_recovery'.
+
 - **Request Body Parameters Constraints:**
 
   - `email`:
     - Required: Yes.
-    - Format: Valid email format.
+    - Format: Should be a valid email address.
     - Length: Maximum 255 characters.
+  - `context`:
+    - Required: Yes.
+    - Allowed values: 'confirm_email', 'password_recovery'.
 
 - **Possible Responses:**
-
   - **Code:** 200 OK
-
-    - **Description:** The email was sent successfully.
+    - **Description:** The OTP code was successfully generated and sent.
     - **Example response body:**
       ```json
       {
@@ -214,10 +223,8 @@ Below are details for the available endpoints in the API.
         "data": {}
       }
       ```
-
-  - **Code:** 422 Unprocessable Entity
-
-    - **Description:** The request couldn't be processed due to validation errors.
+  - **Code:** 400 Bad Request
+    - **Description:** The request could not be processed due to validation errors.
     - **Example response body:**
       ```json
       {
@@ -226,7 +233,6 @@ Below are details for the available endpoints in the API.
         "data": {}
       }
       ```
-
   - **Code:** 500 Internal Server Error
     - **Description:** An unexpected server error occurred.
     - **Example response body:**
@@ -238,22 +244,48 @@ Below are details for the available endpoints in the API.
       }
       ```
 
-## Confirm email
+## OTP Validation
 
-- **Description:** Allows a registered user to confirm their e-mail address.
-- **HTTP Method:** GET
-- **Path:** `/v1/emailconfirmation/confirm`
-- **Request URL Parameters:**
+### Endpoint: `/v1/otp/validate`
 
-  - `email`: Email address of the user to confirm.
-  - `token`: Confirmation token the user received to confirm the e-mail address.
+- **Description:** Validates an OTP code entered by the user in the specified context.
+
+- **HTTP Method:** `POST`
+
+- **Path:** `/v1/otp/validate`
+
+- **Request Body Parameters:**
+
+  - `email`: The user's email address.
+  - `otp_value`: The OTP code value entered by the user.
+  - `context`: The context in which the OTP is being validated, which can be 'confirm_email' or 'password_recovery'.
+
+- **Request Body Parameters Constraints:**
+
+  - `email`:
+    - Required: Yes.
+    - Format: Should be a valid email address.
+    - Length: Maximum 255 characters.
+  - `otp_value`:
+    - Required: Yes.
+  - `context`:
+    - Required: Yes.
+    - Allowed values: 'confirm_email', 'password_recovery'.
 
 - **Possible Responses:**
-
   - **Code:** 200 OK
-
-    - **Description:** The e-mail address was confirmed successfully.
-    - **Example response body:**
+    - **Description:** The OTP code validation was successful.
+    - **Example response body (for 'password_recovery' context):**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
+        "data": {
+          "temporary_access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiMmFmYmRkZC02ODJkLTQ1YTctOGJhMi00NDEzNzgxZGQ3ZmIiLCJuYW1laWQiOiIxIiwibmJmIjoxNzA1MzMwODc3LCJleHAiOjE3MDUzMzE3NzcsImlhdCI6MTcwNTMzMDg3NywiaXNzIjoiYmFpY19jb25uZWN0X2FwaSIsImF1ZCI6ImJhaWNfY29ubmVjdF9hcHAifQ.QIp6LdP4xEyXmDRoWJLpPXPsbvW98rxnUk9T5yhl5TE"
+        }
+      }
+      ```
+    - **Example response body (for other contexts):**
       ```json
       {
         "success": true,
@@ -261,22 +293,18 @@ Below are details for the available endpoints in the API.
         "data": {}
       }
       ```
-
-  - **Code:** 422 Unprocessable Entity
-
-    - **Description:** The request couldn't be processed due to validation errors.
+  - **Code:** 401 Unauthorized
+    - **Description:** OTP value is not valid.
     - **Example response body:**
       ```json
       {
         "success": false,
-        "message": "The 'email' field is not a valid e-mail address.",
+        "message": "Invalid OTP value.",
         "data": {}
       }
       ```
-
-  - **Code:** 400 Bad Request
-
-    - **Description:** Incorrect token or e-mail address.
+  - **Code:** 500 Internal Server Error
+    - **Description:** An unexpected server error occurred.
     - **Example response body:**
       ```json
       {
@@ -286,6 +314,61 @@ Below are details for the available endpoints in the API.
       }
       ```
 
+## Password Reset
+
+### Endpoint: `/v1/password/reset`
+
+- **Description:** Resets the user's password.
+
+- **HTTP Method:** `POST`
+
+- **Path:** `/v1/password/reset`
+
+- **Request Headers:**
+
+  - `Authorization: Bearer [JWT_TOKEN]`
+
+- **Request Body Parameters:**
+
+  - `password`: The new password provided as a SHA-256 hash.
+
+- **Request Body Parameters Constraints:**
+
+  - `password`:
+    - Required: Yes.
+    - Password should be provided as a SHA-256 hash.
+
+- **Possible Responses:**
+  - **Code:** 200 OK
+    - **Description:** The password reset was successful.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Password reset successful",
+        "data": {}
+      }
+      ```
+  - **Code:** 401 Unauthorized
+    - **Description:** Token is not valid.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "Invalid token. Please log in again.",
+        "data": {}
+      }
+      ```
+  - **Code:** 422 Unprocessable Entity
+    - **Description:** The request couldn't be processed due to validation errors.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The 'password' field must be a SHA-256 hash.",
+        "data": {}
+      }
+      ```
   - **Code:** 500 Internal Server Error
     - **Description:** An unexpected server error occurred.
     - **Example response body:**

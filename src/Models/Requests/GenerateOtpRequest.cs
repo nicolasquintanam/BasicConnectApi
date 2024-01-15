@@ -13,5 +13,6 @@ public class GenerateOtpRequest
 
     [JsonPropertyName("context")]
     [Required(ErrorMessage = "The 'context' field is required.")]
+    [EnumDataType(typeof(AcceptedContexts), ErrorMessage = "The context is not valid. It must be 'password_recovery' or 'confirm_email'.")]
     public string? Context { get; set; }
 }
