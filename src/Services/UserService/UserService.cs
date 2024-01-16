@@ -82,4 +82,31 @@ public class UserService(IApplicationDbContext dbContext, ITokenService tokenSer
         await _dbContext.SaveChangesAsync();
         return true;
     }
+
+    public async Task<UserResponse?> UpdateUser(int userId, string? firstName, string? lastName, string? email)
+    {
+        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) ||
+            string.IsNullOrEmpty(email))
+            return null;
+
+        email = email.ToLower();
+
+        var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+            return null;
+        user.FirstName = firstName;
+        user.LastName = lastName;
+        if (!email.Equals(user.Email))
+        {
+            user.Email = email;
+            user.IsEmailConfirmed = false;
+        }
+        await _dbContext.SaveChangesAsync();
+        return new UserResponse()
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email
+        };
+    }
 }
