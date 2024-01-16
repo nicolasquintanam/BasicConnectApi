@@ -380,37 +380,6 @@ Below are details for the available endpoints in the API.
       }
       ```
 
-## Run Database Migrations
-
-- **Description:** Run database migrations.
-- **HTTP Method:** GET
-- **Path:** `/v1/migration/run-migrations`
-
-- **Possible Responses:**
-
-  - **Code:** 200 OK
-
-    - **Description:** The migrations was completed.
-    - **Example response body:**
-      ```json
-      {
-        "success": true,
-        "message": "Operation completed successfully",
-        "data": {}
-      }
-      ```
-
-  - **Code:** 500 Internal Server Error
-    - **Description:** An unexpected server error occurred.
-    - **Example response body:**
-      ```json
-      {
-        "success": false,
-        "message": "An error has occurred",
-        "data": {}
-      }
-      ```
-
 ## User By Id
 
 - **Description:** Get user's information by id.
