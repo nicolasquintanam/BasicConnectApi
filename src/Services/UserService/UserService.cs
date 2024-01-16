@@ -19,6 +19,19 @@ public class UserService(IApplicationDbContext dbContext, ITokenService tokenSer
         return user is not null;
     }
 
+    public async Task<UserResponse?> GetUserById(int userId)
+    {
+        var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+            return null;
+        return new UserResponse()
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email
+        };
+    }
+
     public async Task<int?> GetUserId(string? email)
     {
         var user = await _dbContext.User.FirstOrDefaultAsync(u => u.Email == email);

@@ -1,3 +1,5 @@
+using BasicConnectApi.Models;
+
 namespace BasicConnectApi.Services;
 
 public interface IUserService
@@ -7,4 +9,5 @@ public interface IUserService
     Task<bool> ExistsUser(string? email);
     Task<int?> GetUserId(string? email);
     Task<bool> ResetPassword(int userId, string? password);
+    Task<UserResponse?> GetUserById(int userId);
 }
