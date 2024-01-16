@@ -491,6 +491,18 @@ Below are details for the available endpoints in the API.
       }
       ```
 
+  - **Code:** 403 Forbiden
+
+    - **Description:** Doesn't have authorization.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "You are not authorized to update information for other users.",
+        "data": {}
+      }
+      ```
+
   - **Code:** 409 Conflict
 
     - **Description:** The provided email is already registered for another user.
