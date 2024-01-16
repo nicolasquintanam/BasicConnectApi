@@ -506,3 +506,57 @@ Below are details for the available endpoints in the API.
         "data": {}
       }
       ```
+
+## Update User's Password
+
+- **Description:** Update user's password
+- **HTTP Method:** PUT
+- **Path:** `/v1/user/me/password`
+- **Request Body Parameters:**
+  - `old_password`: User's old password.
+  - `new_password`: User's new password.
+- **Request Body Parameters Constraints:**
+
+  - `old_password`:
+    - Required: Yes.
+    - Password should be provided as a SHA-256 hash.
+  - `new_password`:
+    - Required: Yes.
+    - Password should be provided as a SHA-256 hash.
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** The user's password was updated successfully.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 400 Bad Request
+
+    - **Description:** The request couldn't be processed due to validation errors.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The 'new_password' field must be a SHA-256 hash.",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 500 Internal Server Error
+    - **Description:** An unexpected server error occurred.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "An error has occurred",
+        "data": {}
+      }
+      ```
