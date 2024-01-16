@@ -355,7 +355,7 @@ Below are details for the available endpoints in the API.
       ```json
       {
         "success": false,
-        "message": "Invalid token. Please log in again.",
+        "message": "Invalid or expired temporary token. Please request another one.",
         "data": {}
       }
       ```
