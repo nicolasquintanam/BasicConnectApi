@@ -446,7 +446,7 @@ Below are details for the available endpoints in the API.
 
   - **Code:** 200 OK
 
-    - **Description:** The user registration was updated successfully.
+    - **Description:** The user's information was updated successfully
     - **Example response body:**
       ```json
       {
