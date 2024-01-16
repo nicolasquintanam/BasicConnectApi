@@ -5,11 +5,9 @@ using BasicConnectApi.Services;
 using BasicConnectApi.Models;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.Runtime.InteropServices.Marshalling;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using BasicConnectApi.Custom;
+using Microsoft.AspNetCore.Http;
 
 public class AuthControllerTests
 {
@@ -74,5 +72,31 @@ public class AuthControllerTests
         var methodInfo = _controller.GetType().GetMethod("Logout");
         var attributes = methodInfo?.GetCustomAttributes(typeof(AccessTokenAuthorizeAttribute), true);
         Assert.True(attributes?.Any(), "No AuthorizeAttribute found on Logout method");
+    }
+
+    [Fact]
+    public void Verify_Logout_Method_Returns_Ok()
+    {
+        // Arrange
+        var mockHttpContext = new Mock<HttpContext>();
+        var mockRequest = new Mock<HttpRequest>();
+        mockRequest.SetupGet(r => r.Headers).Returns(new HeaderDictionary { { "Authorization", "dummyToken" } });
+        mockHttpContext.Setup(c => c.Request).Returns(mockRequest.Object);
+        var controllerContext = new ControllerContext
+        {
+            HttpContext = mockHttpContext.Object
+        };
+        _controller.ControllerContext = controllerContext;
+        _jwtServiceMock.Setup(j => j.GetTokenFromAuthorizationHeader(mockRequest.Object.Headers)).Returns("dummyToken");
+        _jwtServiceMock.Setup(x => x.RevokeToken("dummyToken"));
+
+        // Act
+        var result = _controller.Logout();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var baseResponse = Assert.IsType<BaseResponse>(okResult.Value);
+        Assert.True(baseResponse.IsSuccess);
+        Assert.NotNull(baseResponse.Data);
     }
 }
