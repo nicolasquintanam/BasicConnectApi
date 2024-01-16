@@ -448,3 +448,80 @@ Below are details for the available endpoints in the API.
         "data": {}
       }
       ```
+
+## Update User
+
+- **Description:** Update user's information.
+- **HTTP Method:** PUT
+- **Path:** `/v1/user/{id}`
+- **Request Query Parameters:**
+  - `id`: The user's id or 'me'.
+- **Request Body Parameters:**
+  - `first_name`: First name of the user.
+  - `last_name`: Last name of the user.
+  - `email`: Email address of the user.
+- **Request Body Parameters Constraints:**
+
+  - `first_name`:
+    - Required: Yes.
+    - Length: Maximum 100 characters.
+  - `last_name`:
+    - Required: Yes.
+    - Length: Maximum 100 characters.
+  - `email`:
+    - Required: Yes.
+    - Format: Should be a valid email address.
+    - Length: Maximum 255 characters.
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** The user registration was updated successfully.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
+        "data": {
+          "first_name": "Nicolas",
+          "last_name": "Quintana",
+          "email": "nicolas.quintana@gmail.com"
+        }
+      }
+      ```
+
+  - **Code:** 409 Conflict
+
+    - **Description:** The provided email is already registered for another user.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The email is already registered",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 400 Bad Request
+
+    - **Description:** The request couldn't be processed due to validation errors.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "The 'email' field is not a valid e-mail address.",
+        "data": {}
+      }
+      ```
+
+  - **Code:** 500 Internal Server Error
+    - **Description:** An unexpected server error occurred.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "An error has occurred",
+        "data": {}
+      }
+      ```
