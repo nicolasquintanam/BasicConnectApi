@@ -415,7 +415,7 @@ Below are details for the available endpoints in the API.
 
 - **Description:** Get user's information by id.
 - **HTTP Method:** GET
-- **Path:** `/v1/users`
+- **Path:** `/v1/users/{id}`
 - **Request Query Parameters:**
 
   - `id`: The user's id or 'me'.
