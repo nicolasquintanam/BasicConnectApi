@@ -40,7 +40,7 @@ public class UserController(IUserService userService, IJwtService jwtService) : 
             return Unauthorized(new BaseResponse(false));
 
         if (id != "me" && !id.Equals(userId.ToString()))
-            return StatusCode((int)HttpStatusCode.Forbidden, new BaseResponse(false));
+            return StatusCode((int)HttpStatusCode.Forbidden, new BaseResponse(false, "You are not authorized to access information for other users."));
         var user = await _userService.GetUserById(userId.Value);
         if (user == null)
             return NotFound(new BaseResponse(false));
