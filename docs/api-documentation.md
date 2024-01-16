@@ -138,7 +138,7 @@ Below are details for the available endpoints in the API.
 
 - **Possible Responses:**
 
-  - **Code:** 200 OK
+  - **Code:** 201 Created
 
     - **Description:** The user registration was successful.
     - **Example response body:**
