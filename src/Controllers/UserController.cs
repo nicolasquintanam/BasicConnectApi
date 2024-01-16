@@ -23,10 +23,10 @@ public class UserController(IUserService userService, IJwtService jwtService) : 
         int? userId = _userService.RegisterUser(request.FirstName, request.LastName, request.Email, request.Password);
         if (userId == null)
             return BadRequest(new BaseResponse(false));
-        return Ok(new BaseResponse(true) { Data = new { user_id = userId } });
+        return CreatedAtRoute(nameof(GetUserById), routeValues: new { id = userId }, new BaseResponse(true) { Data = new { user_id = userId } });
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = nameof(GetUserById))]
     [AccessTokenAuthorize]
     public async Task<IActionResult> GetUserById(string id)
     {
