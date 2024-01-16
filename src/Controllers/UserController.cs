@@ -50,6 +50,7 @@ public class UserController(IUserService userService, IJwtService jwtService) : 
     }
 
     [HttpPut("{id}")]
+    [AccessTokenAuthorize]
     public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserRequest request)
     {
         if (string.IsNullOrEmpty(id))
@@ -75,5 +76,21 @@ public class UserController(IUserService userService, IJwtService jwtService) : 
         if (user == null)
             return BadRequest(new BaseResponse(false));
         return Ok(new BaseResponse(true) { Data = user });
+    }
+
+    [HttpPut("me/password")]
+    [AccessTokenAuthorize]
+    public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
+    {
+        var token = _jwtService.GetTokenFromAuthorizationHeader(HttpContext.Request.Headers);
+        if (token is null)
+            return Unauthorized(new BaseResponse(false));
+        var userId = _jwtService.GetUserIdFromToken(token);
+        if (userId is null)
+            return Unauthorized(new BaseResponse(false));
+        var result = await _userService.UpdatePassword(userId.Value, request.OldPassword, request.NewPassword);
+        if (!result)
+            return BadRequest(new BaseResponse(false));
+        return Ok(new BaseResponse(true));
     }
 }

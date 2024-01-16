@@ -11,4 +11,5 @@ public interface IUserService
     Task<bool> ResetPassword(int userId, string? password);
     Task<UserResponse?> GetUserById(int userId);
     Task<UserResponse?> UpdateUser(int userId, string? firstName, string? lastName, string? email);
+    Task<bool> UpdatePassword(int userId, string? oldPassword, string? newPassword);
 }

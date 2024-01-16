@@ -71,7 +71,16 @@ public class UserService(IApplicationDbContext dbContext, ITokenService tokenSer
         return true;
     }
 
-    public async Task<bool> ResetPassword(int userId, string? password)
+    public async Task<bool> ResetPassword(int userId, string? password) => await ChangePassword(userId, password);
+    public async Task<bool> UpdatePassword(int userId, string? oldPassword, string? newPassword)
+    {
+        var user = await _dbContext.User.FirstOrDefaultAsync(x => x.Id == userId && string.Equals(x.Password, oldPassword));
+        if (user is null)
+            return false;
+        return await ChangePassword(userId, newPassword);
+    }
+
+    private async Task<bool> ChangePassword(int userId, string? password)
     {
         if (string.IsNullOrEmpty(password))
             return false;
