@@ -9,7 +9,7 @@ public sealed class ResetPasswordTokenAuthorizeAttribute() : Attribute, IAuthori
 {
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        var resultUnauthorized = new UnauthorizedObjectResult(new BaseResponse(false, "Invalid token. Please log in again."));
+        var resultUnauthorized = new UnauthorizedObjectResult(new BaseResponse(false, "Invalid or expired temporary token. Please request another one."));
         var jwtService = context.HttpContext.RequestServices.GetRequiredService<IJwtService>();
         if (context is null)
             return;
