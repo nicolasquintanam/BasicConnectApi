@@ -10,9 +10,11 @@ public class ValidateOtpRequest
     [StringLength(255, ErrorMessage = "The 'email' field must be a string with a maximum length of 255.")]
     [JsonPropertyName("email")]
     public string? Email { get; set; }
+
     [JsonPropertyName("otp_value")]
     [Required(ErrorMessage = "The 'context' field is required.")]
     public string? OtpValue { get; set; }
+
     [JsonPropertyName("context")]
     [Required(ErrorMessage = "The 'context' field is required.")]
     [EnumDataType(typeof(AcceptedContexts), ErrorMessage = "The 'context' field is not valid. It must be 'password_recovery' or 'confirm_email'.")]
