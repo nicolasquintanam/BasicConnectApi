@@ -410,3 +410,41 @@ Below are details for the available endpoints in the API.
         "data": {}
       }
       ```
+
+## User By Id
+
+- **Description:** Get user's information by id.
+- **HTTP Method:** GET
+- **Path:** `/v1/users`
+- **Request Query Parameters:**
+
+  - `id`: The user's id or 'me'.
+
+- **Possible Responses:**
+
+  - **Code:** 200 OK
+
+    - **Description:** The migrations was completed.
+    - **Example response body:**
+      ```json
+      {
+        "success": true,
+        "message": "Operation completed successfully",
+        "data": {
+          "first_name": "Nicolas Andres",
+          "last_name": "Quintana Morales",
+          "email": "nicolasquintanam@gmail.com"
+        }
+      }
+      ```
+
+  - **Code:** 403 Forbiden
+    - **Description:** Doesn't have authorization.
+    - **Example response body:**
+      ```json
+      {
+        "success": false,
+        "message": "You are not authorized to access information for other users.",
+        "data": {}
+      }
+      ```
